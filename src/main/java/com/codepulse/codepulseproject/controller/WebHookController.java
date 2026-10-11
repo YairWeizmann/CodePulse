@@ -1,18 +1,32 @@
 package com.codepulse.codepulseproject.controller;
-
+// Lets us work with JSON as a tree.
+import com.codepulse.codepulseproject.service.GithubService;
+import org.springframework.web.bind.annotation.RequestMapping;
 import tools.jackson.databind.JsonNode;
+// Converts JSON text into JsonNode objects.
 import tools.jackson.databind.ObjectMapper;
+// Lets us create POST endpoints.
 import org.springframework.web.bind.annotation.PostMapping;
+// Gets the data sent inside the HTTP request body.
 import org.springframework.web.bind.annotation.RequestBody;
+// Marks this class as a REST/API controller.
 import org.springframework.web.bind.annotation.RestController;
 
-
 @RestController //Tells Spring boot this class handles Http/Api requests and returns a response
+@RequestMapping("/github")
 public class WebHookController
 {
-   @PostMapping("/github/webhook")
-    public String receiveWebHook(@RequestBody String body)
-   {
+    // Reference to our GithubService.
+    private final GithubService githubService;
+
+    // Spring gives us the GithubService automatically.
+    public WebHookController(GithubService githubService) {
+        this.githubService = githubService;
+    }
+
+
+   @PostMapping("/webhook") // When a POST request is sent to /github/webhook, Spring runs the method below.
+    public String receiveWebHook(@RequestBody String body) throws Exception {
        ObjectMapper objectMapper = new ObjectMapper();
 
        JsonNode json = objectMapper.readTree(body);
@@ -38,11 +52,28 @@ public class WebHookController
                        .get("base")
                        .get("ref").asString();
 
+
+       String[] repoParts = repository.split("/");
+
+       String owner = repoParts[0];
+       String repo = repoParts[1];
+
+       // Ask GithubService to get the changed code.
+       String patch =
+               githubService.getPullRequestPatch(
+                       owner,
+                       repo,
+                       prNumber
+               );
+
+
        System.out.println("Action: " + action);
        System.out.println("PR #" + prNumber);
        System.out.println("Repository: " + repository);
-       System.out.println("Author: " + author);
-       System.out.println("Branch: " + sourceBranch + " -> " + targetBranch);
+
+       System.out.println("PATCH:");
+       System.out.println(patch);
+
 
        return "Webhook received";
    }
