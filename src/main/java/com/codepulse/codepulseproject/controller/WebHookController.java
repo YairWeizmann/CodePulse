@@ -1,5 +1,6 @@
 package com.codepulse.codepulseproject.controller;// Lets us work with JSON as a tree.
 import com.codepulse.codepulseproject.service.GithubService; //The Github Service Class
+import com.codepulse.codepulseproject.service.ReviewService;
 import org.springframework.web.bind.annotation.RequestMapping; // Uses the @RequestMapping annotation
 import tools.jackson.databind.JsonNode;// Converts JSON text into JsonNode objects.
 import tools.jackson.databind.ObjectMapper; // Lets us create POST endpoints.
@@ -12,11 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class WebHookController
 {
     // Reference to our GithubService.
-    private final GithubService githubService;
-
+      ReviewService reviewService;
     // Spring gives us the GithubService automatically.
-    public WebHookController(GithubService githubService) {
-        this.githubService = githubService;
+    public WebHookController(ReviewService reviewService) {
+        this.reviewService = reviewService;
     }
 
 
@@ -43,14 +43,14 @@ public class WebHookController
        String repo = repoParts[1];
 
        // Ask GithubService to get the changed code.
-       String patch = githubService.getPullRequestPatch(owner, repo, prNumber);
+       String review = reviewService.reviewPullRequest(owner,repo,prNumber);
 
        System.out.println("Action: " + action);
        System.out.println("PR #" + prNumber);
        System.out.println("Repository: " + repository);
 
-       System.out.println("PATCH:");
-       System.out.println(patch);
+       System.out.println("Ai Review:");
+       System.out.println(review);
 
 
        return "Webhook received";
