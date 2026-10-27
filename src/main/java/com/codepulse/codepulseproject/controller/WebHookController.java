@@ -1,5 +1,4 @@
 package com.codepulse.codepulseproject.controller;// Lets us work with JSON as a tree.
-import com.codepulse.codepulseproject.service.GithubService; //The Github Service Class
 import com.codepulse.codepulseproject.service.ReviewService;
 import org.springframework.web.bind.annotation.RequestMapping; // Uses the @RequestMapping annotation
 import tools.jackson.databind.JsonNode;// Converts JSON text into JsonNode objects.
@@ -8,15 +7,20 @@ import org.springframework.web.bind.annotation.PostMapping; // Gets the data sen
 import org.springframework.web.bind.annotation.RequestBody; // Marks this class as a REST/API controller.
 import org.springframework.web.bind.annotation.RestController;
 
+import com.codepulse.codepulseproject.model.RepositoryEntity;
+import com.codepulse.codepulseproject.service.RepositoryService;
+
 @RestController //Tells Spring boot this class handles Http/Api requests and returns a response
 @RequestMapping("/github")
 public class WebHookController
 {
-    // Reference to our GithubService.
-      ReviewService reviewService;
+    private final ReviewService reviewService;
+    private final RepositoryService repositoryService;
+
     // Spring gives us the GithubService automatically.
-    public WebHookController(ReviewService reviewService) {
+    public WebHookController(ReviewService reviewService, RepositoryService repositoryService) {
         this.reviewService = reviewService;
+        this.repositoryService = repositoryService;
     }
 
 
@@ -41,6 +45,16 @@ public class WebHookController
 
        String owner = repoParts[0];
        String repo = repoParts[1];
+
+       // Get GitHub's unique repository ID from the webhook.
+       Long githubId = json.get("repository").get("id").asLong();
+
+// Save the repository, or retrieve it if already saved.
+       RepositoryEntity savedRepo =
+               repositoryService.saveRepository(githubId, owner, repo);
+
+// Print our database ID to confirm which record we're using.
+       System.out.println("Saved repository ID: " + savedRepo.getId());
 
        // Ask GithubService to get the changed code.
        String review = reviewService.reviewPullRequest(owner,repo,prNumber);
