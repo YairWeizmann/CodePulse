@@ -1,5 +1,6 @@
-package com.codepulse.codepulseproject.service;
+package com.codepulse.codepulseproject.service.Reviews;
 
+import com.codepulse.codepulseproject.service.GithubService;
 import org.springframework.stereotype.Service;
 
 @Service

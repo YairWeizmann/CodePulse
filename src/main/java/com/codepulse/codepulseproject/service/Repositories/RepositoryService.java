@@ -1,4 +1,4 @@
-package com.codepulse.codepulseproject.service;
+package com.codepulse.codepulseproject.service.Repositories;
 import com.codepulse.codepulseproject.model.RepositoryEntity;
 import com.codepulse.codepulseproject.repository.RepositoryStore;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package com.codepulse.codepulseproject.service;
+package com.codepulse.codepulseproject.service.Reviews;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service; //Grants us the permission to use @Service annotation

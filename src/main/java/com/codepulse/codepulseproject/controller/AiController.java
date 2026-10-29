@@ -1,6 +1,6 @@
 package com.codepulse.codepulseproject.controller;
 
-import com.codepulse.codepulseproject.service.AiService;
+import com.codepulse.codepulseproject.service.Reviews.AiService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
